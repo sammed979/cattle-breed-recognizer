@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Cattle Breed Recognition</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            gap: 20px;
+        }
+        .upload-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .result-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .upload-box {
+            border: 2px dashed #3498db;
+            border-radius: 5px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .upload-box:hover {
+            background-color: #f0f8ff;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .result-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        .breed-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .confidence {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .traits {
+            margin-top: 15px;
+        }
+        .trait-item {
+            background-color: #f1f1f1;
+            border-radius: 15px;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .feedback-section {
+            margin-top: 20px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>AI-Powered Cattle Breed Recognition</h1>
+            <p>Upload an image to identify Indian cattle and buffalo breeds</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="upload-section">
+                <h2>Upload Image</h2>
+                <div class="upload-box" id="upload-box">
+                    <img src="https://img.icons8.com/ios/50/000000/upload--v1.png" alt="Upload icon">
+                    <p>Drag and drop an image here or click to browse</p>
+                    <input type="file" id="file-input" accept="image/*" style="display: none;">
+                </div>
+                <button class="btn" id="predict-btn">Predict Breed</button>
+            </div>
+
+            <div class="result-section">
+                <h2>Results</h2>
+                <div id="loading" style="display: none;">
+                    <p>Analyzing image...</p>
+                </div>
+                <div class="result-card" id="result-card">
+                    <div class="breed-name" id="breed-name">Gir Cattle</div>
+                    <div class="confidence" id="confidence">Confidence: 95%</div>
+                    <div class="traits">
+                        <div class="trait-item">Horn: Curved</div>
+                        <div class="trait-item">Coat: Brown</div>
+                        <div class="trait-item">Ear: Long</div>
+                    </div>
+                    <img src="" alt="Preview" class="preview-image" id="preview-image">
+                    
+                    <div class="feedback-section">
+                        <h3>Provide Feedback</h3>
+                        <p>Is this prediction correct?</p>
+                        <button class="btn" style="background-color: #2ecc71;">Yes</button>
+                        <button class="btn" style="background-color: #e74c3c; margin-left: 10px;">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Bharat Pashudhan App - AI-Powered Cattle Breed Recognition for India</p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM elements
+        const uploadBox = document.getElementById('upload-box');
+        const fileInput = document.getElementById('file-input');
+        const predictBtn = document.getElementById('predict-btn');
+        const resultCard = document.getElementById('result-card');
+        const breedName = document.getElementById('breed-name');
+        const confidence = document.getElementById('confidence');
+        const previewImage = document.getElementById('preview-image');
+        const loading = document.getElementById('loading');
+
+        // Event listeners
+        uploadBox.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#2ecc71';
+        });
+
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.style.borderColor = '#3498db';
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#3498db';
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                displayPreviewImage(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                displayPreviewImage(fileInput.files[0]);
+            }
+        });
+
+        predictBtn.addEventListener('click', () => {
+            if (!fileInput.files.length) {
+                alert('Please select an image first');
+                return;
+            }
+            
+            // Show loading
+            loading.style.display = 'block';
+            resultCard.style.display = 'none';
+            
+            // Simulate API call (replace with actual API call)
+            setTimeout(() => {
+                loading.style.display = 'none';
+                resultCard.style.display = 'block';
+                
+                // In a real app, these values would come from the API response
+                breedName.textContent = 'Gir Cattle';
+                confidence.textContent = 'Confidence: 95%';
+            }, 1500);
+        });
+
+        function displayPreviewImage(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // In a real application, you would implement these functions:
+        // 1. sendImageToAPI(file) - to send the image to your FastAPI backend
+        // 2. displayResults(response) - to display the prediction results
+        // 3. submitFeedback(isCorrect, imageId) - to send feedback to the API
+    </script>
+</body>
+</html>
